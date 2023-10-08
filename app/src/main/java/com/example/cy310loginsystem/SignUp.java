@@ -2,7 +2,10 @@ package com.example.cy310loginsystem;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -31,12 +34,15 @@ public class SignUp extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
         errorTxt = findViewById(R.id.errorTxt);
+        DBHandler db = new DBHandler(SignUp.this);
 
+        // Store the information in the database
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validateData()) {
-                    // Store the information in the database
+
+                    // CHECK FOR SQL INJECTION ATTACK HERE
                     String email = String.valueOf(editTextEmailAddress.getText());
                     String password = String.valueOf(editTextPassword.getText());
                     byte[] hashedPassword = null;
@@ -57,13 +63,19 @@ public class SignUp extends AppCompatActivity {
                     String hashedPasswordString = new String(hashedPassword, StandardCharsets.UTF_8);
                     String saltString = new String(salt, StandardCharsets.UTF_8);
 
+                    // IF EMAIL NOT ALREADY IN DATABASE, THEN:
                     // Store the email, hashed password, and salt in the database
-
-
-                    // Return to login screen
-                    Intent intent = new Intent(SignUp.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    if (db.userDoesNotExist(email)){
+                        db.addNewUser(email, hashedPasswordString, saltString);
+                        // Return to login screen
+                        Intent intent = new Intent(SignUp.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else{
+                        errorTxt.setText("Account with that email already exists");
+                        errorTxt.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         });
