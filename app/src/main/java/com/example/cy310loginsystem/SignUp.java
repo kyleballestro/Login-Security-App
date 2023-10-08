@@ -2,20 +2,13 @@ package com.example.cy310loginsystem;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class SignUp extends AppCompatActivity {
 
@@ -34,7 +27,7 @@ public class SignUp extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
         errorTxt = findViewById(R.id.errorTxt);
-        DBHandler db = new DBHandler(SignUp.this);
+        DBHandler dbhandler = new DBHandler(SignUp.this);
 
         // Store the information in the database
         signUpBtn.setOnClickListener(new View.OnClickListener() {
@@ -45,28 +38,14 @@ public class SignUp extends AppCompatActivity {
                     // CHECK FOR SQL INJECTION ATTACK HERE
                     String email = String.valueOf(editTextEmailAddress.getText());
                     String password = String.valueOf(editTextPassword.getText());
-                    byte[] hashedPassword = null;
 
                     // Hash the password
-                    SecureRandom random = new SecureRandom();
-                    byte[] salt = new byte[16];
-                    random.nextBytes(salt);
-                    try{
-                        MessageDigest md = MessageDigest.getInstance("SHA-512");
-                        md.update(salt);
-                        hashedPassword = md.digest(password.getBytes());
-                        md.reset();
-                    }
-                    catch (NoSuchAlgorithmException ex){
-                        System.out.println(ex);
-                    }
-                    String hashedPasswordString = new String(hashedPassword, StandardCharsets.UTF_8);
-                    String saltString = new String(salt, StandardCharsets.UTF_8);
+                    String salt = BCrypt.gensalt();
+                    String hashedPassword = BCrypt.hashpw(password, salt);
 
-                    // IF EMAIL NOT ALREADY IN DATABASE, THEN:
                     // Store the email, hashed password, and salt in the database
-                    if (db.userDoesNotExist(email)){
-                        db.addNewUser(email, hashedPasswordString, saltString);
+                    if (dbhandler.userDoesNotExist(email)){
+                        dbhandler.addNewUser(email, hashedPassword, salt);
                         // Return to login screen
                         Intent intent = new Intent(SignUp.this, MainActivity.class);
                         startActivity(intent);
