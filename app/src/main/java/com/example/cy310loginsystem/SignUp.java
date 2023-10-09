@@ -1,7 +1,6 @@
 package com.example.cy310loginsystem;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import org.mindrot.jbcrypt.BCrypt;
+import android.util.Patterns;
 
 public class SignUp extends AppCompatActivity {
 
@@ -34,8 +34,6 @@ public class SignUp extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (validateData()) {
-
-                    // CHECK FOR SQL INJECTION ATTACK HERE
                     String email = String.valueOf(editTextEmailAddress.getText());
                     String password = String.valueOf(editTextPassword.getText());
 
@@ -82,12 +80,49 @@ public class SignUp extends AppCompatActivity {
             errorTxt.setVisibility(View.VISIBLE);
             return false;
         }
+
         // If passwords do not match, throw error text
         if (!password.equals(confirmPassword)) {
             errorTxt.setText("Passwords do not match");
             errorTxt.setVisibility(View.VISIBLE);
             return false;
         }
+
+        // If email is not an email, throw error text
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            errorTxt.setText("Not a valid email");
+            errorTxt.setVisibility(View.VISIBLE);
+            return false;
+        }
+
+        // If password doesn't contain an uppercase letter, throw error text
+        boolean containsUpper = false, containsNumber = false;
+        for (int i = 0; i < password.length(); i++){
+            char ch = password.charAt(i);
+            if (Character.isUpperCase(ch)){
+                containsUpper = true;
+            }
+            if (Character.isDigit(ch)){
+                containsNumber = true;
+            }
+        }
+        if (containsUpper == false){
+            errorTxt.setText("Password must contain at least one uppercase letter");
+            errorTxt.setVisibility(View.VISIBLE);
+            return false;
+        }
+        if (containsNumber == false){
+            errorTxt.setText("Password must contain at least one number");
+            errorTxt.setVisibility(View.VISIBLE);
+            return false;
+        }
+
+        if (password.length() < 15){
+            errorTxt.setText("Password must be at least 15 characters");
+            errorTxt.setVisibility(View.VISIBLE);
+            return false;
+        }
+
         return true;
     }
 }

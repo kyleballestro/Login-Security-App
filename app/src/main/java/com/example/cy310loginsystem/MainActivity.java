@@ -1,7 +1,6 @@
 package com.example.cy310loginsystem;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.database.sqlite.SQLiteDatabase;
 import org.mindrot.jbcrypt.BCrypt;
+import android.util.Patterns;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,12 +73,12 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
-        // If the entered password doesn't match the password in database, throw error text
         // Perform the query to retrieve the password
         database = dbhandler.getReadableDatabase();
         String[] passCol = {"password"};
         String[] emailArgs = {email};
-        Cursor passwordCursor = database.query("users", passCol, "email = ?", emailArgs, null, null, null);
+        Cursor passwordCursor = database.query("users", passCol,
+                "email = ?", emailArgs, null, null, null);
         int columnIndex = passwordCursor.getColumnIndex("password");
         if (passwordCursor.moveToFirst()) {
             passFromDB = passwordCursor.getString(columnIndex);
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Column password was not found in the cursor");
         }
 
+        // If the entered password doesn't match the password in database, throw error text
         if (!BCrypt.checkpw(password, passFromDB)){
             errorTxt.setText("Incorrect password");
             errorTxt.setVisibility(View.VISIBLE);
