@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 if (System.currentTimeMillis() >= timeUntilLogin){
                     // If data is valid, grant entry
                     if (validateData()){
+                        timeoutCounter = 0;
                         Intent intent = new Intent(MainActivity.this, Entry.class);
                         startActivity(intent);
                     }
