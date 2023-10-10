@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     else{
                         timeoutCounter++;
                         // If there has been 5 failed attempts, time the user out for 5 minutes
-                        if (timeoutCounter == 5){
+                        if (timeoutCounter >= 5){
                             // Get current time, add 5 minutes to it. Set timeUntilLogin to that new time.
                             long currentTimeMillis = System.currentTimeMillis();
                             timeUntilLogin = currentTimeMillis + TimeUnit.MINUTES.toMillis(5);
@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
                             String formattedTime = timeFormat.format(nextAllowedLoginTime);
                             errorTxt.setText("Maximum attempts reached. Try again at " + formattedTime + ".");
                             errorTxt.setVisibility(View.VISIBLE);
+
+                            // Reset timeoutCounter variable
                             timeoutCounter = 0;
                         }
                     }
