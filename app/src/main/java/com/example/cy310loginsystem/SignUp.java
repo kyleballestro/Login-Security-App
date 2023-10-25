@@ -95,7 +95,7 @@ public class SignUp extends AppCompatActivity {
             return false;
         }
 
-        // If password doesn't contain an uppercase letter, throw error text
+        // If password doesn't contain an uppercase letter or number, or does contain a space, throw error text
         boolean containsUpper = false, containsNumber = false, containsSpace = false;
         for (int i = 0; i < password.length(); i++){
             char ch = password.charAt(i);
@@ -123,9 +123,9 @@ public class SignUp extends AppCompatActivity {
             errorTxt.setText("Password cannot contain any spaces");
             errorTxt.setVisibility(View.VISIBLE);
             return false;
-            S
         }
 
+        // If password shorter than 15 characters, throw error text
         if (password.length() < 15){
             errorTxt.setText("Password must be at least 15 characters");
             errorTxt.setVisibility(View.VISIBLE);
