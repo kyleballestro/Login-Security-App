@@ -96,7 +96,7 @@ public class SignUp extends AppCompatActivity {
         }
 
         // If password doesn't contain an uppercase letter, throw error text
-        boolean containsUpper = false, containsNumber = false;
+        boolean containsUpper = false, containsNumber = false, containsSpace = false;
         for (int i = 0; i < password.length(); i++){
             char ch = password.charAt(i);
             if (Character.isUpperCase(ch)){
@@ -104,6 +104,9 @@ public class SignUp extends AppCompatActivity {
             }
             if (Character.isDigit(ch)){
                 containsNumber = true;
+            }
+            if (Character.isSpaceChar(ch)){
+                containsSpace = true;
             }
         }
         if (containsUpper == false){
@@ -115,6 +118,12 @@ public class SignUp extends AppCompatActivity {
             errorTxt.setText("Password must contain at least one number");
             errorTxt.setVisibility(View.VISIBLE);
             return false;
+        }
+        if (containsSpace == true){
+            errorTxt.setText("Password cannot contain any spaces");
+            errorTxt.setVisibility(View.VISIBLE);
+            return false;
+            S
         }
 
         if (password.length() < 15){
